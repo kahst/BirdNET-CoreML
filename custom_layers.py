@@ -26,17 +26,17 @@ class SimpleSpecLayer(l.Layer):
 
     def call(self, inputs):
 
-        # Perform STFT    
-        spec = tf.signal.stft(inputs,
-                              self.frame_length,
-                              self.frame_step,
-                              fft_length=self.frame_length,
-                              window_fn=tf.signal.hann_window,
-                              pad_end=False,
-                              name='stft')    
+        # # Perform STFT
+        # spec = tf.signal.stft(inputs,
+        #                       self.frame_length,
+        #                       self.frame_step,
+        #                       fft_length=self.frame_length,
+        #                       window_fn=tf.signal.hann_window,
+        #                       pad_end=False,
+        #                       name='stft')
 
         # Cast from complex to float
-        spec = tf.dtypes.cast(spec, tf.float32)
+        spec = tf.dtypes.cast(inputs, tf.float32)
         
         # Convert to power spectrogram
         spec = tf.math.pow(spec, 2.0)        
