@@ -180,18 +180,22 @@ def buildModel():
     print('BUILDING BirdNET MODEL...')
 
     # Input layer
-    print('  INPUT:')
-    inputs = k.Input(shape=int(SAMPLE_RATE * SPEC_LENGTH), name='INPUT')
+    # print('  INPUT:')
+    # inputs = k.Input(shape=int(SAMPLE_RATE * SPEC_LENGTH), name='INPUT')
+    #
+    # # Spectrogram layer if input is raw signal
+    # net = custom_layers.SimpleSpecLayer(sample_rate=SAMPLE_RATE,
+    #                             spec_shape=SPEC_SHAPE,
+    #                             frame_step=int(SAMPLE_RATE * SPEC_LENGTH / (SPEC_SHAPE[1] + 1)),
+    #                             data_format='channels_last',
+    #                             name='SIMPLESPEC')(inputs)
+    #
+    # print('    INPUT LAYER  IN SHAPE:', inputs.shape)
+    # print('    INPUT LAYER OUT SHAPE:', net.shape)
 
-    # Spectrogram layer if input is raw signal
-    net = custom_layers.SimpleSpecLayer(sample_rate=SAMPLE_RATE,
-                                spec_shape=SPEC_SHAPE,
-                                frame_step=int(SAMPLE_RATE * SPEC_LENGTH / (SPEC_SHAPE[1] + 1)),
-                                data_format='channels_last',
-                                name='SIMPLESPEC')(inputs)
+    inputs = k.Input(shape=(257, 384, 1), name = 'preprocessed_input')
 
-    print('    INPUT LAYER  IN SHAPE:', inputs.shape)                       
-    print('    INPUT LAYER OUT SHAPE:', net.shape)
+    print('    INPUT LAYER  IN SHAPE:', inputs.shape)
 
     # Preprocessing convolution
     print('  PRE-PROCESSING STEM:')
@@ -201,7 +205,7 @@ def buildModel():
                    padding='same',
                    data_format='channels_last',
                    kernel_initializer=initializers[INITIALIZER],
-                   name='CONV_0')(net)
+                   name='CONV_0')(inputs)
 
     # Batch norm layer
     net = l.BatchNormalization(axis=-1, name='BNORM_0')(net)
@@ -269,5 +273,6 @@ def saveModel(model, name):
 if __name__ == '__main__':
 
     model = buildModel()
-    saveModel(model, 'BirdNET_1000_RAW_model.h5')
+    print(model.summary())
+    saveModel(model, 'BirdNET_1000_RAW_model_without_preprocessing_custom_layer.h5')
 
